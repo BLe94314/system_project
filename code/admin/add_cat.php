@@ -132,6 +132,6 @@ if (isset($_POST['add_cat'])) {
     $db = mysqli_select_db($connection, "lms");
     $query = "insert into category values('','$_POST[cat_name]')";
     $query_run = mysqli_query($connection, $query);
-    header("Location:admin_dashboard.php");
+    #header("Location:admin_dashboard.php");
 }
 ?>

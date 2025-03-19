@@ -121,7 +121,7 @@ session_start();
                 </div>
             </div>
         </div>
-    </div><br><br>
+    </div><br>
     <div class="row">
         <div class="col-md-3" style="margin: 0px">
             <div class="card bg-light" style="width: 300px">
