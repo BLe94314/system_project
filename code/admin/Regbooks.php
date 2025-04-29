@@ -1,3 +1,4 @@
+<!--- Regbooks.php -->
 <?php
 session_start();
 $connection = mysqli_connect("localhost", "root", "", "lms");
@@ -106,7 +107,7 @@ $query_run = mysqli_query($connection, $query);
                                 <th>Name</th>
                                 <th>Author</th>
                                 <th>Price</th>
-                                <th>Number</th>
+                                <th>ISBN</th>
                             </tr>
                         </thead>
                         <tbody class="text-center">

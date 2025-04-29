@@ -3,25 +3,30 @@
 session_start();
 $connection = mysqli_connect("localhost", "root", "");
 $db = mysqli_select_db($connection, "lms");
-$password = "";
-$query = "select * from admins where email = '$_SESSION[email]'";
+
+$current_password = "";
+
+$query = "SELECT password FROM admins WHERE email = '$_SESSION[email]'";
 $query_run = mysqli_query($connection, $query);
+
 while ($row = mysqli_fetch_assoc($query_run)) {
-    $password = $row['password'];
+    $current_password = $row['password'];
 }
-if ($password == $_POST['new_password']) {
-    $query = "update admins set password = '$_POST[new_password]' where email = '$_SESSION[email]'";
-    $query_run = mysqli_query($connection, $query);
+
+if ($current_password == $_POST['old_password']) {
+    $new_password = $_POST['new_password'];
+    $update_query = "UPDATE admins SET password='$new_password' WHERE email='$_SESSION[email]'";
+    $update_result = mysqli_query($connection, $update_query);
     ?>
     <script type="text/javascript">
-        alert("Updated successfully...");
+        alert("Password updated successfully.");
         window.location.href = "admin_dashboard.php";
     </script>
     <?php
 } else {
     ?>
     <script type="text/javascript">
-        alert("Wrong Admin Password...");
+        alert("Incorrect current password.");
         window.location.href = "change_password.php";
     </script>
     <?php

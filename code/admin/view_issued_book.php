@@ -107,7 +107,7 @@ $query_run = mysqli_query($connection, $query);
                             <tr>
                                 <th>Name</th>
                                 <th>Author</th>
-                                <th>Number</th>
+                                <th>ISBN</th>
                                 <th>Student Name</th>
                             </tr>
                         </thead>

@@ -1,3 +1,4 @@
+<!--- manage_author.php -->
 <?php
 require("functions.php");
 session_start();
@@ -113,7 +114,9 @@ session_start();
                         <td><?php echo $row['author_id']; ?></td>
                         <td><?php echo $row['author_name']; ?></td>
                         <td>
-                            <a href="delete_author.php?author_id=<?php echo $row['author_id']; ?>">Delete</a>
+                            <a href="edit_author.php?author_id=<?php echo $row['author_id']; ?>">Edit</a> |
+                            <a href="delete_author.php?author_id=<?php echo $row['author_id']; ?>"
+                                onclick="return confirm('Are you sure you want to delete this author?');">Delete</a>
                         </td>
                     </tr>
                     <?php

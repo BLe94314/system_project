@@ -116,7 +116,7 @@ while ($row = mysqli_fetch_assoc($query_run)) {
                         <th>Name</th>
                         <th>Author</th>
                         <th>Category</th>
-                        <th>ISBN No.</th>
+                        <th>ISBN</th>
                         <th>Price</th>
                         <th>Action</th>
                     </tr>

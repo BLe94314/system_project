@@ -1,3 +1,4 @@
+<!--- manage_cat.php -->
 <?php
 require("functions.php");
 session_start();

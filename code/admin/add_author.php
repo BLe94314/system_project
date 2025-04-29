@@ -1,3 +1,4 @@
+<!--- add_author.php -->
 <?php
 require("functions.php");
 session_start();
