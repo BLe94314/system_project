@@ -1,48 +1,50 @@
-<!--- add_book.php -->
+<!-- add_book.php -->
 <?php
-require("functions.php");
-session_start();
-#fetch data from database
-$connection = mysqli_connect("localhost", "root", "");
-$db = mysqli_select_db($connection, "lms");
-$name = "";
-$email = "";
-$mobile = "";
-$query = "select * from admins where email = '$_SESSION[email]'";
-$query_run = mysqli_query($connection, $query);
-while ($row = mysqli_fetch_assoc($query_run)) {
-    $name = $row['name'];
-    $email = $row['email'];
-    $mobile = $row['mobile'];
+require_once("../auth.php");
+require_role('admin', 'admin_login.php');
+
+$connection = mysqli_connect("localhost", "root", "", "lms");
+if (!$connection) {
+    die("Database connection failed: " . mysqli_connect_error());
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <title>Add New Book</title>
-    <meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
-    <!-- Bootstrap 5 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <!--- Prevents caching --->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
-    <!-- Bootstrap 5 JS (Popper included) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript">
-        function alertMsg() {
-            alert(Book added successfully...);
-            window.location.href = "admin_dashboard.php";
-        }
+    <!--- Prevents back navigation if admin is not logged in --->
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                window.location.reload();
+            }
+        });
     </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
+<body style="background-color: #f8f9fa;">
+
+    <!--- Top Navigation --->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="admin_dashboard.php">Library Management System (LMS)</a>
             </div>
-            <font style="color: white"><span><strong>Welcome: <?php echo $_SESSION['name']; ?></strong></span></font>
-            <font style="color: white"><span><strong>Email: <?php echo $_SESSION['email']; ?></strong></font>
+            <font style="color: white"><span><strong>Welcome:
+                        <?php echo $_SESSION['name']; ?>
+                    </strong></span></font>
+            <font style="color: white"><span><strong>Email:
+                        <?php echo $_SESSION['email']; ?>
+                    </strong></font>
             <ul class="nav navbar-nav navbar-right">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -63,91 +65,122 @@ while ($row = mysqli_fetch_assoc($query_run)) {
             </ul>
         </div>
     </nav>
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd">
+    <!--- Secondary Navigation --->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
         <div class="container-fluid">
-
-            <ul class="nav navbar-nav navbar-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="admin_dashboard.php">Dashboard</a>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Dashboard</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Books</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="add_book.php">Add New Book</a></li>
+                        <li><a class="dropdown-item" href="manage_book.php">Manage Books</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown">
-                        Books </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="add_book.php">Add New Book</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="manage_book.php">Manage Books</a>
-                    </div>
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Category</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="add_cat.php">Add New Category</a></li>
+                        <li><a class="dropdown-item" href="manage_cat.php">Manage Category</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown">Category </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="add_cat.php">Add New Category</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="manage_cat.php">Manage Category</a>
-                    </div>
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Authors</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="add_author.php">Add New Author</a></li>
+                        <li><a class="dropdown-item" href="manage_author.php">Manage Author</a></li>
+                    </ul>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown">Authors</a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="add_author.php">Add New Author</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="manage_author.php">Manage Author</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="issue_book.php">Issue Book</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="issue_book.php">Issue Book</a></li>
             </ul>
         </div>
     </nav><br>
-    <center>
-        <h4>Add a new Book</h4><br>
-    </center>
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <form action="" method="post">
-                <div class="form-group">
-                    <label for="email">Book Name:</label>
-                    <input type="text" name="book_name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="mobile">Author ID:</label>
-                    <input type="text" name="book_author" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="mobile">Category ID:</label>
-                    <input type="text" name="book_category" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="mobile">Book Number:</label>
-                    <input type="text" name="book_no" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="mobile">Book Price:</label>
-                    <input type="text" name="book_price" class="form-control" required>
-                </div><br>
-                <center>
-                    <button type="submit" name="add_book" class="btn btn-primary">Add Book</button>
-                </center>
-            </form>
+    <div class="container">
+
+        <!--- Form --->
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>Add a New Book</h4>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    <div class="mb-3">
+                        <label for="book_name" class="form-label">Book Name:</label>
+                        <input type="text" name="book_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="book_author" class="form-label">Select Author:</label>
+                        <select name="book_author" class="form-control" required>
+                            <option value="">-- Select Author --</option>
+                            <?php
+                            $query = "SELECT author_id, author_name FROM authors";
+                            $result = mysqli_query($connection, $query);
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<option value='{$row['author_id']}'>{$row['author_name']}</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="book_category" class="form-label">Select Category:</label>
+                        <select name="book_category" class="form-control" required>
+                            <option value="">-- Select Category --</option>
+                            <?php
+                            $query = "SELECT cat_id, cat_name FROM category";
+                            $result = mysqli_query($connection, $query);
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<option value='{$row['cat_id']}'>{$row['cat_name']}</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="book_no" class="form-label">ISBN Number:</label>
+                        <input type="text" name="book_no" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="book_price" class="form-label">Book Price:</label>
+                        <input type="text" name="book_price" class="form-control" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" name="add_book" class="btn btn-primary">Add Book</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="col-md-4"></div>
     </div>
 </body>
 
 </html>
-
 <?php
+// Determines if book already exists in the database
 if (isset($_POST['add_book'])) {
-    $connection = mysqli_connect("localhost", "root", "");
-    $db = mysqli_select_db($connection, "lms");
-    $query = "insert into books values(null,'$_POST[book_name]','$_POST[book_author]','$_POST[book_category]',$_POST[book_no],$_POST[book_price])";
-    $query_run = mysqli_query($connection, $query);
-    #header("location:add_book.php");
+    $book_name = mysqli_real_escape_string($connection, $_POST['book_name']);
+    $author_id = intval($_POST['book_author']);
+    $category_id = intval($_POST['book_category']);
+    $book_no = intval($_POST['book_no']);
+    $book_price = floatval($_POST['book_price']);
+
+    $check = "SELECT * FROM books WHERE book_no = $book_no OR LOWER(book_name) = LOWER('$book_name')";
+    $result = mysqli_query($connection, $check);
+
+    if (mysqli_num_rows($result) > 0) {
+        echo "<script>alert('Book already exists (duplicate ISBN or title).');</script>";
+    } else {
+        $insert_query = "INSERT INTO books VALUES (
+            NULL,
+            '$book_name',
+            $author_id,
+            $category_id,
+            $book_no,
+            $book_price
+        )";
+
+        if (mysqli_query($connection, $insert_query)) {
+            echo "<script>alert('Book added successfully.'); window.location.href='manage_book.php';</script>";
+        } else {
+            echo "<script>alert('Failed to add book.');</script>";
+        }
+    }
 }
 ?>

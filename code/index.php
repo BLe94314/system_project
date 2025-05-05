@@ -1,97 +1,87 @@
 <!--- index.php -->
 <?php
 session_start();
+
+$connection = mysqli_connect("localhost", "root", "", "lms");
+
+if (isset($_POST['login'])) {
+    $email = mysqli_real_escape_string($connection, $_POST['email']);
+    $password = $_POST['password'];
+
+    $query = "SELECT * FROM users WHERE email = '$email'";
+    $result = mysqli_query($connection, $query);
+    $user = mysqli_fetch_assoc($result);
+
+    // Checks if password matches and applied role as user
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['name'] = $user['name'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['role'] = 'user';
+        header("Location: user_dashboard.php");
+        exit();
+    } else {
+        $login_error = "Invalid email or password.";
+    }
+}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Library Management System</title>
-    <meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
-    <!-- Bootstrap 5 CSS -->
+    <title>User Login | Library Management System</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
-
-    <!-- Bootstrap 5 JS (Popper included) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<style type="text/css">
-    #main_content {
-        background: rgba(245, 245, 245, 0.9);
-        padding: 50px;
-    }
 
-    #side_bar {
-        background: rgba(245, 245, 245, 0.9);
-        padding: 50px;
-    }
+<!--- Top navigation --->
 
-    body {
-        background: rgba(245, 245, 245, 0.4);
-    }
-</style>
-
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body style="background-color: #f8f9fa;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="index.php">Library Management System</a>
+            <a class="navbar-brand" href="index.php">Library Management System (LMS)</a>
+            <div class="ms-auto">
+                <a class="btn btn-outline-light me-2" href="index.php">User Login</a>
+                <a class="btn btn-outline-light me-2" href="../code/admin/admin_login.php">Admin Login</a>
+                <a class="btn btn-outline-light" href="signup.php">Signup</a>
             </div>
-            <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.php">User Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="../code/admin/admin_login.php">Admin Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="signup.php"></span>Signup</a>
-                </li>
-            </ul>
         </div>
     </nav>
-    <div class="col-md-12" id="main_content">
-        <center>
-            <h3><u>User Login Form</u></h3>
-        </center>
-        <form action="" method="post">
-            <div class="form-group">
-                <label for="email">Email ID:</label>
-                <input type="text" name="email" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" name="password" class="form-control" required>
-            </div><br>
-            <center>
-                <div class="button-group">
-                    <button type="submit" name="login" class="btn btn-primary">Login</button>&emsp;
-                    <a href="signup.php">Sign Up</a>
+    <!--- Form --->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h4>User Login</h4>
+                    </div>
+                    <div class="card-body">
+                        <?php if (!empty($login_error)): ?>
+                        <div class="alert alert-danger text-center">
+                            <?php echo $login_error; ?>
+                        </div>
+                        <?php endif; ?>
+                        <form method="post">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email ID</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" name="login" class="btn btn-primary">Login</button>
+                            </div>
+                            <div class="text-center mt-3">
+                                <span>Don't have an account?</span> <a href="signup.php">Sign up here</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </center>
-        </form>
-        <?php
-        if (isset($_POST['login'])) {
-            $connection = mysqli_connect("localhost", "root", "");
-            $db = mysqli_select_db($connection, "lms");
-            $query = "select * from users where email = '$_POST[email]'";
-            $query_run = mysqli_query($connection, $query);
-            while ($row = mysqli_fetch_assoc($query_run)) {
-                if ($row['email'] == $_POST['email']) {
-                    if ($row['password'] == $_POST['password']) {
-                        $_SESSION['name'] = $row['name'];
-                        $_SESSION['email'] = $row['email'];
-                        $_SESSION['id'] = $row['id'];
-                        header("Location: user_dashboard.php");
-                    } else {
-                        ?>
-                        <br><br>
-                        <center><span class="alert-danger">Wrong Password !!</span></center>
-                        <?php
-                    }
-                }
-            }
-        }
-        ?>
+            </div>
+        </div>
     </div>
 </body>
 

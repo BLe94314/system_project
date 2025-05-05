@@ -1,5 +1,8 @@
+<!-- update.php -->
 <?php
-session_start();
+require_once("auth.php");
+require_role('user', 'index.php');
+
 $connection = mysqli_connect("localhost", "root", "");
 $db = mysqli_select_db($connection, "lms");
 

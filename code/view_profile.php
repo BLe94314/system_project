@@ -1,42 +1,64 @@
 <!--- view_profile.php -->
 <?php
-session_start();
-#fetch data from database
-$connection = mysqli_connect("localhost", "root", "");
-$db = mysqli_select_db($connection, "lms");
-$name = "";
-$email = "";
-$mobile = "";
-$query = "select * from users where email = '$_SESSION[email]'";
-$query_run = mysqli_query($connection, $query);
-while ($row = mysqli_fetch_assoc($query_run)) {
-    $name = $row['name'];
-    $email = $row['email'];
-    $mobile = $row['mobile'];
-    $address = $row['address'];
+require_once("auth.php");
+require_role('user', 'index.php');
+
+$connection = mysqli_connect("localhost", "root", "", "lms");
+if (!$connection) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+$name = $email = $mobile = $address = "";
+
+if (isset($_SESSION['email'])) {
+    $email = $_SESSION['email'];
+    $query = "SELECT name, email, mobile, address FROM users WHERE email = '$email'";
+    $result = mysqli_query($connection, $query);
+    if ($row = mysqli_fetch_assoc($result)) {
+        $name = $row['name'];
+        $email = $row['email'];
+        $mobile = $row['mobile'];
+        $address = $row['address'];
+    }
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Dashboard</title>
-    <meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
-    <!-- Bootstrap 5 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <title>User Profile</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <!--- Prevents caching --->
 
-    <!-- Bootstrap 5 JS (Popper included) -->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!--- Prevents back navigation if usesr is logged out --->
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                window.location.reload();
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
+<body style="background-color: #f8f9fa;">
+    <!--- Top navigation --->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="user_dashboard.php">Library Management System (LMS)</a>
             </div>
-            <font style="color: white"><span><strong>Welcome: <?php echo $_SESSION['name']; ?></strong></span></font>
-            <font style="color: white"><span><strong>Email: <?php echo $_SESSION['email']; ?></strong></font>
+            <font style="color: white"><span><strong>Welcome:
+                        <?php echo $_SESSION['name']; ?>
+                    </strong></span></font>
+            <font style="color: white"><span><strong>Email:
+                        <?php echo $_SESSION['email']; ?>
+                    </strong></font>
             <ul class="nav navbar-nav navbar-right">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -61,32 +83,33 @@ while ($row = mysqli_fetch_assoc($query_run)) {
             </ul>
         </div>
     </nav><br>
-    <center>
-        <h4>Student Profile Detail</h4><br>
-    </center>
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <form>
-                <div class="form-group">
-                    <label for="name">Name:</label>
-                    <input type="text" class="form-control" value="<?php echo $name; ?>" disabled>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="text" value="<?php echo $email; ?>" class="form-control" disabled>
-                </div>
-                <div class="form-group">
-                    <label for="mobile">Mobile:</label>
-                    <input type="text" value="<?php echo $mobile; ?>" class="form-control" disabled>
-                </div>
-                <div class="form-group">
-                    <label for="email">Address:</label>
-                    <input type="text" value="<?php echo $address; ?>" class="form-control" disabled>
-                </div>
-            </form>
+    <!--- Form --->
+    <div class="container">
+        <div class="card shadow mx-auto" style="max-width: 500px;">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>User Profile Details</h4>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Name:</label>
+                        <input type="text" class="form-control" value="<?php echo $name; ?>" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email:</label>
+                        <input type="text" class="form-control" value="<?php echo $email; ?>" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mobile:</label>
+                        <input type="text" class="form-control" value="<?php echo $mobile; ?>" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address:</label>
+                        <input type="text" class="form-control" value="<?php echo $address; ?>" disabled>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="col-md-4"></div>
     </div>
 </body>
 

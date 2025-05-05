@@ -1,6 +1,8 @@
 <!--- update.php -->
 <?php
-session_start();
+require_once("../auth.php");
+require_role('admin', 'admin_login.php');
+
 $connection = mysqli_connect("localhost", "root", "");
 $db = mysqli_select_db($connection, "lms");
 
@@ -14,6 +16,7 @@ $email_check_result = mysqli_query($connection, $email_check_query);
 $mobile_check_query = "SELECT * FROM admins WHERE mobile = '$mobile' AND email != '$_SESSION[email]'";
 $mobile_check_result = mysqli_query($connection, $mobile_check_query);
 
+// Checks if email OR password is currently taken by another user
 if (mysqli_num_rows($email_check_result) > 0) {
     ?>
     <script type="text/javascript">

@@ -1,5 +1,8 @@
 <!--- registered_user.php -->
 <?php
+require_once("../auth.php");
+require_role('admin', 'admin_login.php');
+
 $connection = mysqli_connect("localhost", "root", "");
 $db = mysqli_select_db($connection, "lms");
 $user_count = 0;

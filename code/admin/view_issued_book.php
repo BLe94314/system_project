@@ -1,13 +1,15 @@
 <!--- view_issued_book.php (for admins only)-->
 <?php
-session_start();
+require_once("../auth.php");
+require_role('admin', 'admin_login.php');
+
 $connection = mysqli_connect("localhost", "root", "", "lms");
 
 if (!$connection) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-$query = "SELECT issued_books.book_name, issued_books.book_author, issued_books.book_no, users.name 
+$query = "SELECT issued_books.s_no, issued_books.book_name, issued_books.book_author, issued_books.book_no, users.name 
           FROM issued_books 
           LEFT JOIN users ON issued_books.student_id = users.id 
           WHERE issued_books.status = 1";
@@ -15,26 +17,41 @@ $query = "SELECT issued_books.book_name, issued_books.book_author, issued_books.
 $query_run = mysqli_query($connection, $query);
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <title>Issued Books</title>
     <meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
-    <!-- Bootstrap 5 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <!--- Prevents caching --->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
-    <!-- Bootstrap 5 JS (Popper included) -->
+    <!--- Prevents back navigation if admin is not logged in --->
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                window.location.reload();
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
+<body style="background-color: #f8f9fa;">
+    <!--- Top Navigation --->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="admin_dashboard.php">Library Management System (LMS)</a>
             </div>
-            <font style="color: white"><span><strong>Welcome: <?php echo $_SESSION['name']; ?></strong></span></font>
-            <font style="color: white"><span><strong>Email: <?php echo $_SESSION['email']; ?></strong></font>
+            <font style="color: white"><span><strong>Welcome:
+                        <?php echo $_SESSION['name']; ?>
+                    </strong></span></font>
+            <font style="color: white"><span><strong>Email:
+                        <?php echo $_SESSION['email']; ?>
+                    </strong></font>
             <ul class="nav navbar-nav navbar-right">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -55,46 +72,37 @@ $query_run = mysqli_query($connection, $query);
             </ul>
         </div>
     </nav>
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd">
+    <!--- Secondary Navigation --->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
         <div class="container-fluid">
-            <ul class="nav navbar-nav navbar-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="admin_dashboard.php">Dashboard</a>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Dashboard</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Books</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="add_book.php">Add New Book</a></li>
+                        <li><a class="dropdown-item" href="manage_book.php">Manage Books</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown">
-                        Books </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="add_book.php">Add New Book</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="manage_book.php">Manage Books</a>
-                    </div>
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Category</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="add_cat.php">Add New Category</a></li>
+                        <li><a class="dropdown-item" href="manage_cat.php">Manage Category</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown">Category </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="add_cat.php">Add New Category</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="manage_cat.php">Manage Category</a>
-                    </div>
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Authors</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="add_author.php">Add New Author</a></li>
+                        <li><a class="dropdown-item" href="manage_author.php">Manage Author</a></li>
+                    </ul>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown">Authors</a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="add_author.php">Add New Author</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="manage_author.php">Manage Author</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="issue_book.php">Issue Book</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="issue_book.php">Issue Book</a></li>
             </ul>
         </div>
     </nav><br>
+    <!--- Form --->
     <div class="container mt-4">
         <div class="card shadow-lg">
             <div class="card-header bg-primary text-white">
@@ -105,21 +113,39 @@ $query_run = mysqli_query($connection, $query);
                     <table class="table table-bordered table-striped table-hover">
                         <thead class="table-dark text-center">
                             <tr>
+                                <th>Issued Book ID</th>
                                 <th>Name</th>
                                 <th>Author</th>
                                 <th>ISBN</th>
-                                <th>Student Name</th>
+                                <th>Username</th>
                             </tr>
                         </thead>
                         <tbody class="text-center">
+                            <?php if (mysqli_num_rows($query_run) > 0): ?>
                             <?php while ($row = mysqli_fetch_assoc($query_run)) { ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['book_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['book_author']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['book_no']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['name']); ?></td>
-                                </tr>
+                            <tr>
+                                <td>
+                                    <?php echo htmlspecialchars($row['s_no']); ?>
+                                </td>
+                                <td>
+                                    <?php echo htmlspecialchars($row['book_name']); ?>
+                                </td>
+                                <td>
+                                    <?php echo htmlspecialchars($row['book_author']); ?>
+                                </td>
+                                <td>
+                                    <?php echo htmlspecialchars($row['book_no']); ?>
+                                </td>
+                                <td>
+                                    <?php echo htmlspecialchars($row['name']); ?>
+                                </td>
+                            </tr>
                             <?php } ?>
+                            <?php else: ?>
+                            <tr>
+                                <td colspan="5">No books currently issued.</td>
+                            </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>

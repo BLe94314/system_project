@@ -1,6 +1,8 @@
 <!--- update_password.php -->
 <?php
-session_start();
+require_once("auth.php");
+require_role('user', 'index.php');
+
 $connection = mysqli_connect("localhost", "root", "");
 $db = mysqli_select_db($connection, "lms");
 
@@ -11,10 +13,11 @@ while ($row = mysqli_fetch_assoc($query_run)) {
     $current_password = $row['password'];
 }
 
-// Check if the old password entered matches the current password
-if ($current_password == $_POST['old_password']) {
-    $new_password = $_POST['new_password'];
-    $query = "UPDATE users SET password = '$new_password' WHERE email = '$_SESSION[email]'";
+// Checks if old password matches and changes to new password
+// Hashes the new password to database
+if (password_verify($_POST['old_password'], $current_password)) {
+    $new_password_hashed = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+    $query = "UPDATE users SET password = '$new_password_hashed' WHERE email = '$_SESSION[email]'";
     $query_run = mysqli_query($connection, $query);
     ?>
     <script type="text/javascript">

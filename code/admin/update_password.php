@@ -1,6 +1,8 @@
 <!--- update_password.php -->
 <?php
-session_start();
+require_once("../auth.php");
+require_role('admin', 'admin_login.php');
+
 $connection = mysqli_connect("localhost", "root", "");
 $db = mysqli_select_db($connection, "lms");
 
